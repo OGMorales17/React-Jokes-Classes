@@ -32,6 +32,7 @@ class Joke extends React.Component {
             <i className="fas fa-thumbs-down" />
           </button>
           {this.state.vote}
+          {/* {this.votes} */}
         </div>
 
         <div className="Joke-text">{this.props.text}</div>
