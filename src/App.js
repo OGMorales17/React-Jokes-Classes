@@ -1,6 +1,6 @@
 import React from "react";
-import JokeList from "./JokeList";
-// import JokeList from "./ClassComponents/JokeList";
+// import JokeList from "./JokeList";
+import JokeList from "./ClassComponents/JokeList";
 
 function App() {
   return (
