@@ -5,11 +5,6 @@ import "./JokeList.css";
 
 
 export default class JokeList extends Component {
-
-  // Set 10 jokes as default render
-  static defaultProps = {
-    numJokesToGet: 10
-  };
   constructor(props) {
     super(props)
     this.state = { jokes: [] }
@@ -19,6 +14,11 @@ export default class JokeList extends Component {
     this.resetVotes = this.resetVotes.bind(this);
     this.toggleLock = this.toggleLock.bind(this);
   }
+
+  // Set 10 jokes as default render
+  static defaultProps = {
+    numJokesToGet: 10
+  };
 
   // componentDidMount() and componentDidUpdate() will do the work of useEffect that will only work on functional Components
 
