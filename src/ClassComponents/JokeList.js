@@ -5,6 +5,7 @@ import "./JokeList.css";
 
 
 export default class JokeList extends Component {
+
   // Set 10 jokes as default render
   static defaultProps = {
     numJokesToGet: 10
@@ -20,6 +21,7 @@ export default class JokeList extends Component {
   }
 
   // componentDidMount() and componentDidUpdate() will do the work of useEffect that will only work on functional Components
+
   componentDidMount() {
     if (this.state.jokes.length < this.props.numJokesToGet) this.getJokes();
   }
@@ -30,74 +32,43 @@ export default class JokeList extends Component {
 
   async getJokes() {
     try {
-      // load jokes one at a time, adding not-yet-seen jokes
-      let jokes = this.state.jokes;
+      let jokes = this.state.jokes
+      /**
+       * Store the list of jokes, with votes in local storage. When users visit the app, 
+       * it should show saved jokes, rather than fetching new jokes. However, 
+       * the user should still be able to generate new jokes via the button, 
+       * and these new jokes should replace the ones in local storage.
+       */
       let jokeVotes = JSON.parse(
         window.localStorage.getItem("jokeVotes") || "{}"
       );
+
       let seenJokes = new Set(jokes.map(j => j.id));
 
       while (jokes.length < this.props.numJokesToGet) {
         let res = await axios.get("https://icanhazdadjoke.com", {
           headers: { Accept: "application/json" }
         });
-        let { status, ...joke } = res.data;
+        let { status, ...jokeObj } = res.data;
 
-        if (!seenJokes.has(joke.id)) {
-          seenJokes.add(joke.id);
-          jokeVotes[joke.id] = jokeVotes[joke.id] || 0;
-          jokes.push({ ...joke, votes: jokeVotes[joke.id], locked: false });
+        if (!seenJokes.has(jokeObj.id)) {
+          seenJokes.add(jokeObj.id);
+
+          jokeVotes[jokeObj.id] = jokeVotes[jokeObj.id] || 0;
+
+          jokes.push({ ...jokeObj, votes: jokeVotes[jokeObj.id], locked: false });
         } else {
-          console.log("duplicate found!");
+          console.error("duplicate found!");
         }
       }
 
-      this.setState({ jokes });
+      this.setState({ jokes })
+
       window.localStorage.setItem("jokeVotes", JSON.stringify(jokeVotes));
     } catch (e) {
       console.log(e);
     }
   }
-
-  // async getJokes() {
-  //   try {
-  //     let jokes = this.state.jokes
-  //     /**
-  //      * Store the list of jokes, with votes in local storage. When users visit the app, 
-  //      * it should show saved jokes, rather than fetching new jokes. However, 
-  //      * the user should still be able to generate new jokes via the button, 
-  //      * and these new jokes should replace the ones in local storage.
-  //      */
-  //     let jokeVotes = JSON.parse(
-  //       window.localStorage.getItem("jokeVotes") || "{}"
-  //     );
-
-  //     let seenJokes = new Set(jokes.map(j => j.id));
-
-  //     while (jokes.length < this.props.numJokesToGet) {
-  //       let res = await axios.get("https://icanhazdadjoke.com", {
-  //         headers: { Accept: "application/json" }
-  //       });
-  //       let { status, ...jokeObj } = res.data;
-
-  //       if (!seenJokes.has(jokeObj.id)) {
-  //         seenJokes.add(jokeObj.id);
-
-  //         jokeVotes[jokeObj.id] = jokeVotes[jokeObj.id] || 0;
-
-  //         jokes.push({ ...jokeObj, votes: jokeVotes[jokeObj.id], locked: false });
-  //       } else {
-  //         console.error("duplicate found!");
-  //       }
-  //     }
-
-  //     this.setState({ jokes })
-
-  //     window.localStorage.setItem("jokeVotes", JSON.stringify(jokeVotes));
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  // }
 
   /**
    * Whenever you use this.setState and you pass a callback function to it, 
@@ -170,16 +141,6 @@ export default class JokeList extends Component {
           </div>
         ) : null}
       </div>
-      // <div className="JokeList">
-      //   <button className="JokeList-getmore" onClick={this.generateNewJokes}>
-      //     Get New Jokes
-      //   </button>
-
-      //   {sortedJokes.map(j => (
-      //     <Joke text={j.joke} key={j.id} id={j.id} votes={j.votes} vote={this.vote} />
-      //   ))}
-      // </div>
-
     );
   }
 }
